@@ -62,6 +62,7 @@ def main(
     cache: bool = typer.Option(True, help="Cache completion results."),
     animation: bool = typer.Option(True, help="Typewriter animation."),
     spinner: bool = typer.Option(True, help="Show loading spinner during API request."),
+    stdin: bool = typer.Option(False, "--stdin", "-", help="Read prompt from standard input.", allow_dash=True),
 ) -> None:
     if list_chat:
         echo_chat_ids()
@@ -70,12 +71,18 @@ def main(
         echo_chat_messages(show_chat)
         return
 
+    # Typer does not actually parse the "-", so it ends up in the prompt. We can extract it from there:
+    # BUG: But this means that we cannot have a prompt when passing -
+    if prompt == "-":
+        stdin = True
+        prompt = None
+
     if not prompt and not editor:
-        if not sys.stdin.isatty():
+        if stdin or not sys.stdin.isatty():
             prompt = sys.stdin.read()
         else:
             raise MissingParameter(param_hint="PROMPT", param_type="string")
-    elif prompt and not sys.stdin.isatty():
+    elif prompt and stdin:
         stdin_data = sys.stdin.read()
         prompt = f"{stdin_data.strip()}\n{prompt}"
 
