@@ -81,7 +81,7 @@ def main(
         return
 
     if not prompt and not editor:
-        if stdin or not sys.stdin.isatty():
+        if stdin:
             prompt = sys.stdin.read()
         else:
             raise MissingParameter(param_hint="PROMPT", param_type="string")
