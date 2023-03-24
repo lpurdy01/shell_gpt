@@ -48,6 +48,16 @@ def get_completion(
     )
 
 
+# typer does not parse '-' like it does with other options
+# So we instead parse '-' and '--stdin' options here, before invoking typer
+stdin = False
+if "-" in sys.argv:
+    stdin = True
+    sys.argv.remove("-")
+if "--stdin" in sys.argv:
+    stdin = True
+    sys.argv.remove("--stdin")
+
 def main(
     prompt: str = typer.Argument(None, show_default=False, help="The prompt to generate completions for."),
     temperature: float = typer.Option(1.0, min=0.0, max=1.0, help="Randomness of generated output."),
@@ -62,7 +72,6 @@ def main(
     cache: bool = typer.Option(True, help="Cache completion results."),
     animation: bool = typer.Option(True, help="Typewriter animation."),
     spinner: bool = typer.Option(True, help="Show loading spinner during API request."),
-    stdin: bool = typer.Option(False, "--stdin", "-", help="Read prompt from standard input.", allow_dash=True),
 ) -> None:
     if list_chat:
         echo_chat_ids()
@@ -70,12 +79,6 @@ def main(
     if show_chat:
         echo_chat_messages(show_chat)
         return
-
-    # Typer does not actually parse the "-", so it ends up in the prompt. We can extract it from there:
-    # BUG: But this means that we cannot have a prompt when passing -
-    if prompt == "-":
-        stdin = True
-        prompt = None
 
     if not prompt and not editor:
         if stdin or not sys.stdin.isatty():
