@@ -87,7 +87,7 @@ def main(
             raise MissingParameter(param_hint="PROMPT", param_type="string")
     elif prompt and stdin:
         stdin_data = sys.stdin.read()
-        prompt = f"{stdin_data.strip()}\n{prompt}"
+        prompt = f"{prompt}\n{stdin_data.strip()}"
 
     if editor:
         prompt = get_edited_prompt()
