@@ -7,7 +7,9 @@ A command-line productivity tool powered by OpenAI's ChatGPT (GPT-3.5). As devel
 
 ## Installation
 ```shell
-pip install shell-gpt
+git clone https://github.com/parsapoorsh/shell_gpt
+cd shell_gpt
+pip install -e .
 ```
 You'll need an OpenAI API key, you can generate one [here](https://beta.openai.com/account/api-keys).
 
