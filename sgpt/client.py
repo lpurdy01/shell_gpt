@@ -24,7 +24,7 @@ class OpenAIClient:
     @cache
     def _request(
         self,
-        messages: List[Mapping[str, str]],
+        messages: List[Mapping[dict, dict]],
         model: str = "gpt-3.5-turbo",
         temperature: float = 1,
         top_probability: float = 1,
@@ -72,7 +72,7 @@ class OpenAIClient:
     @chat_cache
     def get_completion(
         self,
-        messages: List[Mapping[str, str]],
+        messages: List[Mapping[dict, dict]],
         model: str = "gpt-3.5-turbo",
         temperature: float = 1,
         top_probability: float = 1,

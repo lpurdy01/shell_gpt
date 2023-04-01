@@ -120,6 +120,15 @@ python fizz_buzz.py
 # ...
 ```
 
+### Custom System Roles
+You can use the `--system` option to specify a custom system role. This is useful to tell the model how it should act
+along with what rules you want it to follow.
+
+```shell
+sgpt --role "You are a json file generator. Only ever return valid json syntax." "What are your rules?"
+# As a JSON file generator, my primary rule is to always produce valid JSON syntax. In addition to this, I ensure that:...
+```
+
 ### Chat
 To start a chat session, use the `--chat` option followed by a unique session name and a prompt:
 ```shell
@@ -213,22 +222,24 @@ DEFAULT_MODEL=gpt-3.5-turbo
 
 ### Full list of arguments
 ```shell
-╭─ Arguments ───────────────────────────────────────────────────────────────────────────────────────────────╮
-│   prompt      [PROMPT]  The prompt to generate completions for.                                           │
-╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Options ─────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ --temperature      FLOAT RANGE [0.0<=x<=1.0]  Randomness of generated output. [default: 1.0]              │
-│ --top-probability  FLOAT RANGE [0.1<=x<=1.0]  Limits highest probable tokens (words). [default: 1.0]      │
-│ --model            TEXT                       Specify what model to use. [default: gpt-3.5-turbo]         │
-│ --chat             TEXT                       Follow conversation with id (chat mode). [default: None]    │
-│ --show-chat        TEXT                       Show all messages from provided chat id. [default: None]    │
-│ --list-chat                                   List all existing chat ids. [default: no-list-chat]         │
-│ --shell                                       Generate and execute shell command.                         │
-│ --code                                        Provide code as output. [default: no-code]                  │
-│ --editor                                      Open $EDITOR to provide a prompt. [default: no-editor]      │
-│ --cache                                       Cache completion results. [default: cache]                  │
-│ --help                                        Show this message and exit.                                 │
-╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Arguments ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│   prompt      [PROMPT]  The prompt to generate completions for.                                                                                                  │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --temperature                           FLOAT RANGE [0.0<=x<=1.0]  Randomness of generated output. [default: 1.0]                                                │
+│ --top-probability                       FLOAT RANGE [0.1<=x<=1.0]  Limits highest probable tokens (words). [default: 1.0]                                        │
+│ --model                                 TEXT                       Specify what model to use. [default: gpt-3.5-turbo]                                           │
+│ --role                                  TEXT                       Specify what role a prompt should use. Defaults: shell, code, default. [default: default]     │
+│ --save-role                             TEXT                       Save a role for future use. [default: None]                                                   │
+│ --list-roles         --no-list-roles                               List all saved roles. [default: no-list-roles]                                                │
+│ --show-role                             TEXT                       Show a saved role. [default: None]                                                            │
+│ --chat                                  TEXT                       Follow conversation with id (chat mode). [default: None]                                      │
+│ --show-chat                             TEXT                       Show all messages from provided chat id. [default: None]                                      │
+│ --list-chat          --no-list-chat                                List all existing chat ids. [default: no-list-chat]                                           │
+│ --editor             --no-editor                                   Open $EDITOR to provide a prompt. [default: no-editor]                                        │
+│ --cache              --no-cache                                    Cache completion results. [default: cache]                                                    │
+│ --help                                                             Show this message and exit.                                                                   │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
 ## Docker

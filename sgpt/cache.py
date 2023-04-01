@@ -123,7 +123,7 @@ class ChatCache:
 
     def get_messages(self, chat_id):
         messages = self._read(chat_id)
-        return [f"{message['role']}: {message['content']}" for message in messages]
+        return messages
 
     def exists(self, chat_id: Optional[str]) -> bool:
         return chat_id and bool(self._read(chat_id))

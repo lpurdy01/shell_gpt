@@ -7,6 +7,7 @@ from click import UsageError
 
 CONFIG_FOLDER = os.path.expanduser("~/.config")
 CONFIG_PATH = Path(CONFIG_FOLDER) / "shell_gpt" / ".sgptrc"
+ROLE_STORAGE_PATH = Path(CONFIG_FOLDER) / "shell_gpt" / "roles"
 CHAT_CACHE_PATH = Path(gettempdir()) / "shell_gpt" / "chat_cache"
 CACHE_PATH = Path(gettempdir()) / "shell_gpt" / "cache"
 CHAT_CACHE_LENGTH = 100
