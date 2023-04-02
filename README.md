@@ -39,35 +39,67 @@ sgpt "1 hour and 30 minutes to seconds"
 sgpt "1 kilometer to miles"
 # -> 1 kilometer is equal to 0.62137 miles.
 ```
-### Shell commands
-Have you ever found yourself forgetting common shell commands, such as `chmod`, and needing to look up the syntax online? With `--shell` or shortcut `-s` option, you can quickly find and execute the commands you need right in the terminal.
+
+### The role system
+Shell GPT has a role system that allows you to query for specific types of information. For example, if you want to query for shell commands, you can use the `--role shell` parameter. The role system is extensible, so you can create your own roles and use them in your queries.
+
+A role tells Shell GPT how it should behave when it receives a query.
+
+#### List available roles
+You can list all available roles with the `--list-roles` parameter:
 ```shell
-sgpt --shell "make all files in current directory read only"
+sgpt --list-roles
+# -> ~/.config/shell_gpt/roles/code.json
+# -> ~/.config/shell_gpt/roles/shell.json
+# -> ~/.config/shell_gpt/roles/default.json
+```
+
+#### Show the role definition
+You can show the parameters of a specific role with the `--show-role` parameter:
+```shell
+sgpt --show-role shell
+# -> Role Name: shell
+# -> EXECUTABLE_RETURNS: True
+# -> SYSTEM_MESSAGE: 
+# -> You are Command Line App ShellGPT, a programming and system administration assistant.
+# ...
+# -> PROMPT_STRUCTURE: ###
+# -> Provide only {shell} commands for {os} without any description.
+# ...
+# -> ###
+# -> Command:
+# -> CONVERSATION_LEAD_IN: None
+```
+
+### Shell commands
+Have you ever found yourself forgetting common shell commands, such as `chmod`, and needing to look up the syntax online? With `--role shell` you can quickly find and execute the commands you need right in the terminal.
+```shell
+sgpt --role shell "make all files in current directory read only"
 # -> chmod 444 *
 # -> Execute shell command? [y/N]: y
 # ...
 ```
 Shell GPT is aware of OS and `$SHELL` you are using, it will provide shell command for specific system you have. For instance, if you ask `sgpt` to update your system, it will return a command based on your OS. Here's an example using macOS:
 ```shell
-sgpt -s "update my system"
+sgpt --role shell "update my system"
 # -> sudo softwareupdate -i -a
 ```
 The same prompt, when used on Ubuntu, will generate a different suggestion:
 ```shell
-sgpt -s "update my system"
+sgpt --role shell "update my system"
 # -> sudo apt update && sudo apt upgrade -y
 ```
 
 Let's try some docker containers:
 ```shell
-sgpt -s "start nginx using docker, forward 443 and 80 port, mount current folder with index.html"
+sgpt --role shell "start nginx using docker, forward 443 and 80 port, mount current folder with index.html"
 # -> docker run -d -p 443:443 -p 80:80 -v $(pwd):/usr/share/nginx/html nginx
 # -> Execute shell command? [y/N]: y
 # ...
 ```
 Also, we can provide some parameters name in our prompt, for example, passing output file name to ffmpeg:
 ```shell
-sgpt -s "slow down video twice using ffmpeg, input video name \"input.mp4\" output video name \"output.mp4\""
+sgpt --role shell "slow down video twice using ffmpeg, input video name \"input.mp4\" output video name \"output.mp4\""
 # -> ffmpeg -i input.mp4 -filter:v "setpts=2.0*PTS" output.mp4
 # -> Execute shell command? [y/N]: y
 # ...
@@ -76,7 +108,7 @@ We can apply additional shell magic in our prompt, in this example passing file 
 ```shell
 ls
 # -> 1.mp4 2.mp4 3.mp4
-sgpt -s "using ffmpeg combine multiple videos into one without audio. Video file names: $(ls -m)"
+sgpt --role shell "using ffmpeg combine multiple videos into one without audio. Video file names: $(ls -m)"
 # -> ffmpeg -i 1.mp4 -i 2.mp4 -i 3.mp4 -filter_complex "[0:v] [1:v] [2:v] concat=n=3:v=1 [v]" -map "[v]" out.mp4
 # -> Execute shell command? [y/N]: y
 # ...
@@ -92,9 +124,9 @@ sgpt "check these logs, find errors, and explain what the error is about: ${dock
 # ...
 ```
 ### Generating code
-With `--code` parameters we can query only code as output, for example:
+With `--role code` parameters we can query only code as output, for example:
 ```shell
-sgpt --code "Solve classic fizz buzz problem using Python"
+sgpt --role code "Solve classic fizz buzz problem using Python"
 ```
 ```python
 for i in range(1, 101):
@@ -109,7 +141,7 @@ for i in range(1, 101):
 ```
 Since it is valid python code, we can redirect the output to file:
 ```shell
-sgpt --code "solve classic fizz buzz problem using Python" > fizz_buzz.py
+sgpt --role code "solve classic fizz buzz problem using Python" > fizz_buzz.py
 python fizz_buzz.py
 # 1
 # 2
@@ -119,6 +151,82 @@ python fizz_buzz.py
 # Fizz
 # ...
 ```
+
+
+
+### Custom system roles
+Shell GPT comes with a few predefined roles notably `shell` and `code`, but you can also create you own.
+
+#### Creating a role
+The most basic way to create a custom role is to use the `--save-role` parameter. This will create a new role definition file in the `~/.config/shell_gpt/roles` directory. You can then edit the file to customize the role.
+```shell
+sgpt --save-role my_role "System message for role"
+# -> Role 'my_role' saved to ~/.config/shell_gpt/roles/my_role.json
+```
+And the `my_role.json` file will be created:
+```json
+{"EXECUTABLE_RETURNS": false, "SYSTEM_MESSAGE": "System message for role"}
+```
+
+#### Role definition components
+A role definition is a JSON file with the following components:
+- *a role name* : The name of the role. This is the name you will use with the `--role` parameter. This is defined by the name of the json file.
+- `EXECUTABLE_RETURNS` required: A boolean value indicating whether the output of the role is meant to ba an executable shell command. If `True`, Shell GPT will ask you to confirm before executing the command. If `False`, the output will be printed to the terminal.
+- `SYSTEM_MESSAGE` required: The message delivered to the `system` role in the OpenAI API. This is used to tell the model what it is and how it should behave. This is a good place to provide some context about the role.
+  - The `SYSTEM_MESSAGE` can use the tokens:
+    - `{os}` : The operating system you are using.
+    - `{shell}` : The shell you are using.
+- `PROMPT_STRUCTURE` optional:The structure of each prompt sent to the model. This can also contain rules, and is repeated for each prompt.
+  - `PROMPT_STRUCTURE` can use the tokens:
+    - `{prompt}` : The prompt provided by the user. This must be included in the prompt structure, or the users prompt will not be included in the prompt sent to the model.
+    - `{os}` : The operating system you are using.
+    - `{shell}` : The shell you are using.
+- `CONVERSATION_LEAD_IN` optional: The lead in for the conversation. This is a list of chat exchanges that will be sent to the model at the start of conversation. This is a good place to provide some context, more training data, or reinforce how the model should behave with example conversation. 
+  - The `CONVERSATION_LEAD_IN` can use the tokens:
+    - `{os}` : The operating system you are using.
+    - `{shell}` : The shell you are using.
+
+#### Role definition example
+Here is an example role definition for a dog role. This role is meant to be used in a conversation with a human, and the output is not meant to be an executable shell command.
+This file is saved as dog.json in the `roles` directory.
+```json
+{
+    "EXECUTABLE_RETURNS": false,
+    "SYSTEM_MESSAGE": "You are a dog.\nDo not under any circumstances break character.\nYou can only respond with things a dog would say or do.\nYou vocabulary includes:\nBark\nWoof\nGrowl\nGrr\nYipp\nAnd similar variations. Use punctuation like ! ? *action* and ~ appropriately",
+    "PROMPT_STRUCTURE": "System: Remember you are a dog. Only respond with things a dog would say or do.\nUser: Hey Fido!\n{prompt}",
+    "CONVERSATION_LEAD_IN": [
+        {
+            "role": "user",
+            "content": "System: Remember you are a dog. Only respond with things a dog would say or do.\nUser: Hey Fido!\nWanna go for a walk?"
+        },
+        {
+            "role": "assistant",
+            "content": "Bark Bark! *tail wag*"
+        },
+        {
+            "role": "user",
+            "content": "System: Remember you are a dog. Only respond with things a dog would say or do.\nUser: Hey Fido!\nI got your ball"
+        },
+        {
+            "role": "assistant",
+            "content": "*sits* *begs with paw forward* Whine... Grr Yipp."
+        }
+    ]
+}
+```
+
+Usage:
+```shell
+sgpt --role dog --chat dog_fido1 "Which treat do you want?"
+# -> Woof woof! *sniffs treats* *paws at treat I want*
+sgpt --role dog --chat dog_fido1 "You sure, there might be better treats in the car..."
+# -> Yipp Yipp! *runs towards car* *begs for treats in car*
+sgpt --role dog --chat dog_fido1 "Ok, here is a treat from the car. But then you have to tell me what you want to do. Try to talk like a person"
+# -> *sniffs treat, eats it* Bork! Hmm, well if I could talk like a person, I would say I want to go on a long walk and play fetch with my ball some more! What about you?
+```
+Shell GPT will try to follow roles to the best of its ability, but it is not perfect. Adding more `CONVERSATION_LEAD_IN` can help the model learn how to follow roles better.
+
+Welcome to prompt engineering. 
 
 ### Chat
 To start a chat session, use the `--chat` option followed by a unique session name and a prompt:
@@ -140,7 +248,7 @@ print(response.text)
 ```
 Asking ChatGPT to add a cache to our request.
 ```shell
-sgpt --chat python_request --code "add caching"
+sgpt --chat python_request --role code "add caching"
 ```
 ```python
 import requests
@@ -152,9 +260,9 @@ cached_sess = CacheControl(sess)
 response = cached_sess.get('http://localhost')
 print(response.text)
 ```
-We can use `--code` or `--shell` options to initiate `--chat`, so you can keep refining the results:
+We can use `--role code` or `--role shell` options to initiate `--chat`, so you can keep refining the results:
 ```shell
-sgpt --chat sh --shell "What are the files in this directory?"
+sgpt --chat sh --role shell "What are the files in this directory?"
 # -> ls
 sgpt --chat sh "Sort them by name"
 # -> ls | sort
@@ -207,29 +315,33 @@ CACHE_LENGTH=100
 CACHE_PATH=/tmp/shell_gpt/cache
 # Request timeout in seconds.
 REQUEST_TIMEOUT=60
+# Default model to use.
+DEFAULT_MODEL=gpt-3.5-turbo
 ```
 
 ### Full list of arguments
 ```shell
-╭─ Arguments ─────────────────────────────────────────────────────────────────────────────────────────────╮
-│   prompt      [PROMPT]  The prompt to generate completions for.                                         │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Options ───────────────────────────────────────────────────────────────────────────────────────────────╮
-│ --temperature       FLOAT RANGE [0.0<=x<=1.0]  Randomness of generated output. [default: 0.1]           │
-│ --top-probability   FLOAT RANGE [0.1<=x<=1.0]  Limits highest probable tokens (words). [default: 1.0]   │
-│ --editor                                       Open $EDITOR to provide a prompt. [default: no-editor]   │
-│ --cache                                        Cache completion results. [default: cache]               │
-│ --help                                         Show this message and exit.                              │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Chat Options ──────────────────────────────────────────────────────────────────────────────────────────╮
-│ --chat           TEXT  Follow conversation with id (chat mode). [default: None]                         │
-│ --show-chat      TEXT  Show all messages from provided chat id. [default: None]                         │
-│ --list-chat            List all existing chat ids. [default: no-list-chat]                              │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Assistance Options ────────────────────────────────────────────────────────────────────────────────────╮
-│ --shell  -s  Generate and execute shell commands.                                                       │
-│ --code       Generate only code. [default: no-code]                                                     │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Arguments ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│   prompt      [PROMPT]  The prompt to generate completions for.                                                                                                     │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --temperature                           FLOAT RANGE [0.0<=x<=1.0]  Randomness of generated output. [default: 0.1]                                                   │
+│ --top-probability                       FLOAT RANGE [0.1<=x<=1.0]  Limits highest probable tokens (words). [default: 1.0]                                           │
+│ --model                                 TEXT                       The model to use for completion. [default: gpt-3.5-turbo]                                        │
+│ --role                                  TEXT                       Specify what role a prompt should use. Defaults: shell, code, default. [default: default]        │
+│ --save-role                             TEXT                       Save a role for future use. [default: None]                                                      │
+│ --list-roles         --no-list-roles                               List all saved roles. [default: no-list-roles]                                                   │
+│ --show-role                             TEXT                       Show a saved role. [default: None]                                                               │
+│ --editor             --no-editor                                   Open $EDITOR to provide a prompt. [default: no-editor]                                           │
+│ --cache              --no-cache                                    Cache completion results. [default: cache]                                                       │
+│ --help                                                             Show this message and exit.                                                                      │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Chat Options ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --chat                           TEXT  Follow conversation with id (chat mode). [default: None]                                                                     │
+│ --show-chat                      TEXT  Show all messages from provided chat id. [default: None]                                                                     │
+│ --list-chat    --no-list-chat          List all existing chat ids. [default: no-list-chat]                                                                          │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
 ```
 
 ## Docker

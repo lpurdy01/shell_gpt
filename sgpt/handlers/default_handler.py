@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from sgpt import OpenAIClient, config, make_prompt
+from typing import List, Mapping
 from sgpt.utils import CompletionModes
 from .handler import Handler
 
@@ -12,19 +13,17 @@ class DefaultHandler(Handler):
     def __init__(
         self,
         client: OpenAIClient,
-        shell: bool = False,
-        code: bool = False,
+        prompt: str,
+        role: str,
         model: str = "gpt-3.5-turbo",
     ) -> None:
         super().__init__(client)
         self.client = client
-        self.mode = CompletionModes.get_mode(shell, code)
+        self.prompt = prompt
+        self.role = role
         self.model = model
 
-    def make_prompt(self, prompt) -> str:
-        prompt = prompt.strip()
-        return make_prompt.initial(
-            prompt,
-            self.mode == CompletionModes.SHELL,
-            self.mode == CompletionModes.CODE,
-        )
+    def get_messages(self) -> List[Mapping[dict, dict]]:
+        messages = make_prompt.prompt_constructor(self.prompt, role=self.role, chat_init=True)
+        return messages
+

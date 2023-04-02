@@ -19,7 +19,7 @@ class CompletionModes(Enum):
         return CompletionModes.NORMAL
 
 
-def get_edited_prompt() -> str:
+def get_edited_prompt(prompt: str = "") -> str:
     """
     Opens the user's default editor to let them
     input a prompt, and returns the edited text.
@@ -27,6 +27,8 @@ def get_edited_prompt() -> str:
     :return: String prompt.
     """
     with NamedTemporaryFile(suffix=".txt", delete=False) as file:
+        # If any write existing prompt to file
+        file.write(prompt.encode("utf-8"))
         # Create file and store path.
         file_path = file.name
     editor = os.environ.get("EDITOR", "vim")

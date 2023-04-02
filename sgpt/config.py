@@ -7,11 +7,13 @@ from click import UsageError
 
 CONFIG_FOLDER = os.path.expanduser("~/.config")
 CONFIG_PATH = Path(CONFIG_FOLDER) / "shell_gpt" / ".sgptrc"
+ROLE_STORAGE_PATH = Path(CONFIG_FOLDER) / "shell_gpt" / "roles"
 CHAT_CACHE_PATH = Path(gettempdir()) / "shell_gpt" / "chat_cache"
 CACHE_PATH = Path(gettempdir()) / "shell_gpt" / "cache"
 CHAT_CACHE_LENGTH = 100
 CACHE_LENGTH = 100
 REQUEST_TIMEOUT = 60
+DEFAULT_MODEL = "gpt-3.5-turbo"
 EXPECTED_KEYS = (
     "OPENAI_API_HOST",
     "OPENAI_API_KEY",
@@ -20,6 +22,7 @@ EXPECTED_KEYS = (
     "CACHE_LENGTH",
     "CACHE_PATH",
     "REQUEST_TIMEOUT",
+    "DEFAULT_MODEL",
 )
 config = {}
 
@@ -42,6 +45,7 @@ def init() -> None:
         config["CACHE_LENGTH"] = os.getenv("CACHE_LENGTH", str(CACHE_LENGTH))
         config["CACHE_PATH"] = os.getenv("CACHE_PATH", str(CACHE_PATH))
         config["REQUEST_TIMEOUT"] = os.getenv("REQUEST_TIMEOUT", str(REQUEST_TIMEOUT))
+        config["DEFAULT_MODEL"] = os.getenv("DEFAULT_MODEL", str(DEFAULT_MODEL))
         _write()
 
     with open(CONFIG_PATH, "r", encoding="utf-8") as file:

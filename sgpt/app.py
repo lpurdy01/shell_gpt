@@ -20,6 +20,7 @@ from click import MissingParameter, BadArgumentUsage
 from sgpt import config, OpenAIClient
 from sgpt import ChatHandler, DefaultHandler
 from sgpt.utils import get_edited_prompt
+import sgpt.role_manager as role_manager
 
 
 def main(  # pylint: disable=too-many-arguments
@@ -40,6 +41,26 @@ def main(  # pylint: disable=too-many-arguments
         max=1.0,
         help="Limits highest probable tokens (words).",
     ),
+    model: str = typer.Option(
+        config.get("DEFAULT_MODEL"),
+        help="The model to use for completion.",
+    ),
+    role: str = typer.Option(
+        "default",
+        help="Specify what role a prompt should use. Defaults: shell, code, default."
+    ),
+    save_role: str = typer.Option(
+        None,
+        help="Save a role for future use."
+    ),
+    list_roles: bool = typer.Option(
+        False,
+        help="List all saved roles."
+    ),
+    show_role: str = typer.Option(
+        None,
+        help="Show a saved role."
+    ),
     chat: str = typer.Option(
         None,
         help="Follow conversation with id (chat mode).",
@@ -57,18 +78,6 @@ def main(  # pylint: disable=too-many-arguments
         callback=ChatHandler.list_ids,
         rich_help_panel="Chat Options",
     ),
-    shell: bool = typer.Option(
-        False,
-        "--shell",
-        "-s",
-        help="Generate and execute shell commands.",
-        rich_help_panel="Assistance Options",
-    ),
-    code: bool = typer.Option(
-        False,
-        help="Generate only code.",
-        rich_help_panel="Assistance Options",
-    ),
     editor: bool = typer.Option(
         False,
         help="Open $EDITOR to provide a prompt.",
@@ -78,37 +87,47 @@ def main(  # pylint: disable=too-many-arguments
         help="Cache completion results.",
     ),
 ) -> None:
+    role_manager.check_and_setup_default_roles()
+    if list_roles:
+        role_manager.list_roles(echo=True)
+        return
+    if show_role:
+        role_manager.show_role(show_role, echo=True)
+        return
+    if save_role:
+        role_manager.save_role(save_role, prompt, echo=True)
+        return
+
     if not prompt and not editor:
         raise MissingParameter(param_hint="PROMPT", param_type="string")
 
-    if shell and code:
-        raise BadArgumentUsage("--shell and --code options cannot be used together.")
-
     if editor:
-        prompt = get_edited_prompt()
+        prompt = get_edited_prompt(prompt)
 
     api_host = config.get("OPENAI_API_HOST")
     api_key = config.get("OPENAI_API_KEY")
     client = OpenAIClient(api_host, api_key)
 
     if chat:
-        full_completion = ChatHandler(client, chat, shell, code).handle(
-            prompt,
+        full_completion = ChatHandler(client, chat, prompt, role).handle(
             temperature=temperature,
             top_probability=top_probability,
+            model=model,
             chat_id=chat,
             caching=cache,
         )
     else:
-        full_completion = DefaultHandler(client, shell, code).handle(
-            prompt,
+        full_completion = DefaultHandler(client, prompt, role).handle(
             temperature=temperature,
             top_probability=top_probability,
+            model=model,
             caching=cache,
         )
 
-    if not code and shell and typer.confirm("Execute shell command?"):
-        os.system(full_completion)
+        # if "EXECUTABLE_RETURNS" in role is true then ask if the response should be executed as shell command
+        role_data = role_manager.recall_role(role)
+        if role_data and role_data.get("EXECUTABLE_RETURNS") and typer.confirm("Execute shell command?"):
+            os.system(full_completion)
 
 
 def entry_point() -> None:

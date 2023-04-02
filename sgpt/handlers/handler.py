@@ -1,4 +1,4 @@
-from typing import List, Dict, Generator
+from typing import List, Dict, Generator, Mapping
 
 import typer
 
@@ -9,12 +9,13 @@ class Handler:
     def __init__(self, client: OpenAIClient):
         self.client = client
 
-    def make_prompt(self, prompt) -> str:
+    def get_messages(self) -> List[Mapping[dict, dict]]:
+        # This should never be called because it is overridden in the child class.
         raise NotImplementedError
 
     def get_completion(  # pylint: disable=too-many-arguments
         self,
-        messages: List[Dict[str, str]],
+        messages: List[Mapping[dict, dict]],
         model: str = "gpt-3.5-turbo",
         temperature: float = 1,
         top_probability: float = 1,
@@ -28,9 +29,8 @@ class Handler:
             caching=caching,
         )
 
-    def handle(self, prompt: str, **kwargs) -> str:
-        prompt = self.make_prompt(prompt)
-        messages = [{"role": "user", "content": prompt}]
+    def handle(self, **kwargs) -> str:
+        messages = self.get_messages()
         full_completion = ""
         for word in self.get_completion(messages=messages, **kwargs):
             typer.secho(word, fg="magenta", bold=True, nl=False)

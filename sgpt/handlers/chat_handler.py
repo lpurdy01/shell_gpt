@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import List, Dict, Optional, Callable, Generator
+from typing import List, Dict, Optional, Callable, Generator, Mapping
 
 import typer
 from click import BadArgumentUsage
@@ -67,7 +67,7 @@ class ChatSession:
 
     def _write(self, messages: List[Dict], chat_id: str):
         file_path = self.storage_path / chat_id
-        json.dump(messages[-self.length :], file_path.open("w"))
+        json.dump(messages[-self.length:], file_path.open("w"))
 
     def invalidate(self, chat_id: str):
         file_path = self.storage_path / chat_id
@@ -75,7 +75,7 @@ class ChatSession:
 
     def get_messages(self, chat_id):
         messages = self._read(chat_id)
-        return [f"{message['role']}: {message['content']}" for message in messages]
+        return messages
 
     def exists(self, chat_id: Optional[str]) -> bool:
         return chat_id and bool(self._read(chat_id))
@@ -91,25 +91,22 @@ class ChatHandler(Handler):
     chat_session = ChatSession(CHAT_CACHE_LENGTH, CHAT_CACHE_PATH)
 
     def __init__(  # pylint: disable=too-many-arguments
-        self,
-        client: OpenAIClient,
-        chat_id: str,
-        shell: bool = False,
-        code: bool = False,
-        model: str = "gpt-3.5-turbo",
+            self,
+            client: OpenAIClient,
+            chat_id: str,
+            prompt: str,
+            role: str,
+            model: str = "gpt-3.5-turbo",
     ) -> None:
         super().__init__(client)
         self.chat_id = chat_id
         self.client = client
-        self.mode = CompletionModes.get_mode(shell, code)
+        self.role = role
         self.model = model
+        self.prompt = prompt
 
-        chat_history = self.chat_session.get_messages(self.chat_id)
-        self.is_shell_chat = chat_history and chat_history[0].endswith("###\nCommand:")
-        self.is_code_chat = chat_history and chat_history[0].endswith("###\nCode:")
-        self.is_default_chat = chat_history and chat_history[0].endswith("###")
-
-        self.validate()
+        self.chat_history = self.chat_session.get_messages(self.chat_id)
+        self.messages = self.validate()
 
     @classmethod
     def list_ids(cls, value) -> None:
@@ -131,51 +128,34 @@ class ChatHandler(Handler):
             typer.secho(message, fg=color)
         raise typer.Exit()
 
-    def validate(self) -> None:
+    def validate(self) -> List[Mapping[dict, dict]]:
         if self.initiated:
-            if self.is_shell_chat and self.mode == CompletionModes.CODE:
+            # TODO: Make this system able to tell what role a chat was started with, validate, and continue if the user didn't specify a role
+            existing_system_prompt = self.chat_history[0]["content"]
+            hypothetical_messages = make_prompt.prompt_constructor(self.prompt, role=self.role, chat_init=False)
+            if hypothetical_messages[0]["content"] == existing_system_prompt:
+                # return everything except the first message
+                # because the system message is already in the chat history, and chat_cache will add it again
+                messages = hypothetical_messages[1:]
+            else:
+                # Error message about how the user is asking for a different system chat than the one that already exists
                 raise BadArgumentUsage(
-                    f'Chat session "{self.chat_id}" was initiated as shell assistant, '
-                    "and can be used with --shell only"
-                )
-            if self.is_code_chat and self.mode == CompletionModes.SHELL:
-                raise BadArgumentUsage(
-                    f'Chat "{self.chat_id}" was initiated as code assistant, '
-                    "and can be used with --code only"
-                )
-            if self.is_default_chat and self.mode != CompletionModes.NORMAL:
-                raise BadArgumentUsage(
-                    f'Chat "{self.chat_id}" was initiated as default assistant, '
-                    "and can't be used with --shell or --code"
-                )
-            # If user didn't pass chat mode, we will use the one that was used to initiate the chat.
-            if self.mode == CompletionModes.NORMAL:
-                if self.is_shell_chat:
-                    self.mode = CompletionModes.SHELL
-                elif self.is_code_chat:
-                    self.mode = CompletionModes.CODE
+                    f"Chat id:'{self.chat_id}' was initiated with system role as \n'{existing_system_prompt}'\n\n Can't be continued with new system prompt \n'{hypothetical_messages[0]['content']}'")
+        else:
+            messages = make_prompt.prompt_constructor(self.prompt, role=self.role, chat_init=True)
+
+        return messages
 
     @property
     def initiated(self) -> bool:
         return self.chat_session.exists(self.chat_id)
 
-    def make_prompt(self, prompt: str) -> str:
-        prompt = prompt.strip()
-        if self.initiated:
-            if self.is_shell_chat:
-                prompt += "\nCommand:"
-            elif self.is_code_chat:
-                prompt += "\nCode:"
-            return prompt
-        return make_prompt.initial(
-            prompt,
-            self.mode == CompletionModes.SHELL,
-            self.mode == CompletionModes.CODE,
-        )
+    def get_messages(self) -> List[Mapping[dict, dict]]:
+        return self.messages
 
     @chat_session
     def get_completion(  # pylint: disable=arguments-differ
-        self,
-        **kwargs,
+            self,
+            **kwargs,
     ) -> Generator:
         yield from super().get_completion(**kwargs)
