@@ -7,7 +7,7 @@ import json
 import sgpt.role_manager as role_manager
 
 
-def message_completer(message: str, prompt:str = None) -> str:
+def message_completer(message: str, prompt: str = None) -> str:
     operating_systems = {
         "Linux": "Linux/" + distro_name(pretty=True),
         "Windows": "Windows " + platform.release(),
