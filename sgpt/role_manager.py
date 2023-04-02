@@ -107,7 +107,9 @@ def recall_role(role_name: str) -> dict:
     return role_data
 
 
-def list_roles():
+def list_roles(value: bool):
+    if not value:
+        return
     _list_roles(echo=True)
     raise typer.Exit()
 
@@ -124,6 +126,8 @@ def _list_roles(echo: bool = True):
 
 
 def show_role(role_name: str):
+    if not role_name:
+        return
     _show_role(role_name, echo=True)
     raise typer.Exit()
 
@@ -142,7 +146,7 @@ def _show_role(role_name: str, echo: bool = True) -> str:
 
     if "CONVERSATION_LEAD_IN" in role_data:
         role_info += f"CONVERSATION_LEAD_IN: {role_data['CONVERSATION_LEAD_IN']}\n"
-    else :
+    else:
         role_info += f"CONVERSATION_LEAD_IN: None"
 
     if echo:
@@ -152,7 +156,8 @@ def _show_role(role_name: str, echo: bool = True) -> str:
 
 
 def check_and_setup_default_roles():
-    # check if default roles: code, shell, and default exist. If not, inform the user and ask for their consent to create missing roles.
+    # check if default roles: code, shell, and default exist. If not, inform the user and ask for their consent to
+    # create missing roles.
 
     missing_roles = []
     role_info = [
@@ -176,7 +181,8 @@ if __name__ == "__main__":
     check_and_setup_default_roles()
     # This is just for testing.
     save_role("test",
-              "Hello, You are a role testing AI. Please always respond with a more enthuastic test response, and all context provided.",
+              "Hello, You are a role testing AI. Please always respond with a more enthuastic test response, "
+              "and all context provided.",
               executable_returns=False,
               prompt_structure="Hello, {prompt}!",
               conversation_lead_in=[{"role": "user", "content": "{shell} and os {os} Test Test"},

@@ -129,7 +129,8 @@ class ChatHandler(Handler):
 
     def validate(self) -> List[Mapping[dict, dict]]:
         if self.initiated:
-            # TODO: Make this system able to tell what role a chat was started with, validate, and continue if the user didn't specify a role
+            # TODO: Make this system able to tell what role a chat was started with, validate, and continue if the
+            #  user didn't specify a role
             existing_system_prompt = self.chat_history[0]["content"]
             hypothetical_messages = make_prompt.prompt_constructor(self.prompt, role=self.role, chat_init=False)
             if hypothetical_messages[0]["content"] == existing_system_prompt:
@@ -137,9 +138,11 @@ class ChatHandler(Handler):
                 # because the system message is already in the chat history, and chat_cache will add it again
                 messages = hypothetical_messages[1:]
             else:
-                # Error message about how the user is asking for a different system chat than the one that already exists
+                # Error message about how the user is asking for a different system chat than the one that already
+                # exists
                 raise BadArgumentUsage(
-                    f"Chat id:'{self.chat_id}' was initiated with system role as \n'{existing_system_prompt}'\n\n Can't be continued with new system prompt \n'{hypothetical_messages[0]['content']}'")
+                    f"Chat id:'{self.chat_id}' was initiated with system role as \n'{existing_system_prompt}'\n\n "
+                    f"Can't be continued with new system prompt \n'{hypothetical_messages[0]['content']}'")
         else:
             messages = make_prompt.prompt_constructor(self.prompt, role=self.role, chat_init=True)
 
