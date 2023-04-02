@@ -15,14 +15,14 @@ import os
 import typer
 
 # Click is part of typer.
-from click import MissingParameter, BadArgumentUsage
+from click import MissingParameter
 from sgpt import config, OpenAIClient
 from sgpt import ChatHandler, DefaultHandler
 from sgpt.utils import get_edited_prompt
-import sgpt.role_manager as role_manager
+from sgpt import role_manager
 
 
-def main(  # pylint: disable=too-many-arguments
+def main(  # pylint: disable=R0913,R0914
     prompt: str = typer.Argument(
         None,
         show_default=False,
@@ -54,13 +54,13 @@ def main(  # pylint: disable=too-many-arguments
         help="Save a role for future use.",
         rich_help_panel="Role Options",
     ),
-    list_roles: bool = typer.Option(
+    list_roles: bool = typer.Option(  # pylint: disable=W0613
         False,
         help="List all saved roles.",
         callback=role_manager.list_roles,
         rich_help_panel="Role Options",
     ),
-    show_role: str = typer.Option(
+    show_role: str = typer.Option(  # pylint: disable=W0613
         None,
         help="Show a saved role.",
         callback=role_manager.show_role,
@@ -124,7 +124,8 @@ def main(  # pylint: disable=too-many-arguments
             caching=cache,
         )
 
-        # if "EXECUTABLE_RETURNS" in role is true then ask if the response should be executed as shell command
+        # if "EXECUTABLE_RETURNS" in role is true then ask
+        # if the response should be executed as shell command
         role_data = role_manager.recall_role(role)
         if (
             role_data

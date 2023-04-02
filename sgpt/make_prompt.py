@@ -1,10 +1,10 @@
 import platform
 from os import getenv
 from os.path import basename, splitext
-from distro import name as distro_name
 from typing import Mapping, List
 import json
-import sgpt.role_manager as role_manager
+from distro import name as distro_name
+from sgpt import role_manager
 
 
 def message_completer(message: str, prompt: str = None) -> str:
@@ -63,7 +63,7 @@ def following_prompt_constructor(prompt: str, role_data: dict) -> dict:
     return message
 
 
-def message_constructor(
+def message_constructor(  # pylint: disable=R1710
     message: str, system: bool = False, user: bool = False, assistant: bool = False
 ) -> dict:
     if not (system or user or assistant):
@@ -71,9 +71,9 @@ def message_constructor(
 
     if system:
         return json.loads(f'{{"role": "system", "content": "{message}"}}', strict=False)
-    elif user:
+    if user:
         return json.loads(f'{{"role": "user", "content": "{message}"}}', strict=False)
-    elif assistant:
+    if assistant:
         return json.loads(
             f'{{"role": "assistant", "content": "{message}"}}', strict=False
         )

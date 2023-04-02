@@ -1,4 +1,4 @@
-from typing import List, Dict, Generator, Mapping
+from typing import List, Generator, Mapping
 
 import typer
 

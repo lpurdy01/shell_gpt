@@ -1,8 +1,9 @@
 import os
 import json
-import sgpt.config as config
 from typing import Mapping, List
 import typer
+from sgpt import config
+
 
 SHELL_SYSTEM_PROMPT = """
 You are Command Line App ShellGPT, a programming and system administration assistant.
@@ -60,7 +61,7 @@ Prompt: {prompt}
 ###"""
 
 
-def save_role(
+def save_role(  # pylint: disable=R0913
     role_name: str,
     system_message: str,
     executable_returns: bool = False,
@@ -93,8 +94,8 @@ def save_role(
     if conversation_lead_in:
         role_data["CONVERSATION_LEAD_IN"] = conversation_lead_in
 
-    with open(role_file, "w") as f:
-        json.dump(role_data, f)
+    with open(role_file, "w", encoding="utf-8") as file:
+        json.dump(role_data, file)
 
     if echo:
         typer.echo(f"Role '{role_name}' saved to {role_file}")
@@ -109,8 +110,8 @@ def recall_role(role_name: str) -> dict:
     if not os.path.exists(role_file):
         raise FileNotFoundError(f"Role '{role_name}' not found.")
 
-    with open(role_file, "r") as f:
-        role_data = json.load(f)
+    with open(role_file, "r", encoding="utf-8") as file:
+        role_data = json.load(file)
 
     return role_data
 
@@ -153,12 +154,12 @@ def _show_role(role_name: str, echo: bool = True) -> str:
     if "PROMPT_STRUCTURE" in role_data:
         role_info += f"PROMPT_STRUCTURE: {role_data['PROMPT_STRUCTURE']}\n"
     else:
-        role_info += f"PROMPT_STRUCTURE: None\n"
+        role_info += "PROMPT_STRUCTURE: None\n"
 
     if "CONVERSATION_LEAD_IN" in role_data:
         role_info += f"CONVERSATION_LEAD_IN: {role_data['CONVERSATION_LEAD_IN']}\n"
     else:
-        role_info += f"CONVERSATION_LEAD_IN: None"
+        role_info += "CONVERSATION_LEAD_IN: None"
 
     if echo:
         typer.echo(role_info)
@@ -167,8 +168,8 @@ def _show_role(role_name: str, echo: bool = True) -> str:
 
 
 def check_and_setup_default_roles():
-    # check if default roles: code, shell, and default exist. If not, inform the user and ask for their consent to
-    # create missing roles.
+    # check if default roles: code, shell, and default exist.
+    # If not, inform the user and ask for their consent to create missing roles.
 
     missing_roles = []
     role_info = [
@@ -203,7 +204,8 @@ if __name__ == "__main__":
     # This is just for testing.
     save_role(
         "test",
-        "Hello, You are a role testing AI. Please always respond with a more enthuastic test response, "
+        "Hello, You are a role testing AI."
+        "Please always respond with a more enthusiastic test response, "
         "and all context provided.",
         executable_returns=False,
         prompt_structure="Hello, {prompt}!",

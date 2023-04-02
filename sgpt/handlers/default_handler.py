@@ -1,8 +1,6 @@
 from pathlib import Path
-
-from sgpt import OpenAIClient, config, make_prompt
 from typing import List, Mapping
-from sgpt.utils import CompletionModes
+from sgpt import OpenAIClient, config, make_prompt
 from .handler import Handler
 
 CHAT_CACHE_LENGTH = int(config.get("CHAT_CACHE_LENGTH"))
