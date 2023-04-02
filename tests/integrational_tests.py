@@ -57,6 +57,7 @@ class TestShellGpt(TestCase):
 
     def test_code(self):
         chat_name = uuid4()
+        # pylint: disable=W0105
         """
         This test will request from ChatGPT a python code to make CLI app,
         which will be written to a temp file, and then it will be executed
@@ -142,7 +143,7 @@ class TestShellGpt(TestCase):
         dict_arguments = {
             "prompt": "Using python request localhost:80.",
             "--chat": f"test_{chat_name}",
-            "--role": "code"
+            "--role": "code",
         }
         result = runner.invoke(app, self.get_arguments(**dict_arguments))
         assert result.exit_code == 0
@@ -179,10 +180,9 @@ class TestShellGpt(TestCase):
         assert "8" in result.stdout
 
     def test_validation_code_shell(self):
-        dict_arguments = {
+        dict_arguments = {  # pylint: disable=W0109,E1132
             "prompt": "What is the capital of the Czech Republic?",
             "--role": "code",
-            "--role": "shell"
         }
         result = runner.invoke(app, self.get_arguments(**dict_arguments))
         assert result.exit_code == 2
