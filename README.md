@@ -321,27 +321,28 @@ DEFAULT_MODEL=gpt-3.5-turbo
 
 ### Full list of arguments
 ```shell
-╭─ Arguments ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│   prompt      [PROMPT]  The prompt to generate completions for.                                                                                                     │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Options ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ --temperature                           FLOAT RANGE [0.0<=x<=1.0]  Randomness of generated output. [default: 0.1]                                                   │
-│ --top-probability                       FLOAT RANGE [0.1<=x<=1.0]  Limits highest probable tokens (words). [default: 1.0]                                           │
-│ --model                                 TEXT                       The model to use for completion. [default: gpt-3.5-turbo]                                        │
-│ --role                                  TEXT                       Specify what role a prompt should use. Defaults: shell, code, default. [default: default]        │
-│ --save-role                             TEXT                       Save a role for future use. [default: None]                                                      │
-│ --list-roles         --no-list-roles                               List all saved roles. [default: no-list-roles]                                                   │
-│ --show-role                             TEXT                       Show a saved role. [default: None]                                                               │
-│ --editor             --no-editor                                   Open $EDITOR to provide a prompt. [default: no-editor]                                           │
-│ --cache              --no-cache                                    Cache completion results. [default: cache]                                                       │
-│ --help                                                             Show this message and exit.                                                                      │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Chat Options ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ --chat                           TEXT  Follow conversation with id (chat mode). [default: None]                                                                     │
-│ --show-chat                      TEXT  Show all messages from provided chat id. [default: None]                                                                     │
-│ --list-chat    --no-list-chat          List all existing chat ids. [default: no-list-chat]                                                                          │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-
+╭─ Arguments ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│   prompt      [PROMPT]  The prompt to generate completions for.                                                                                                    │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --temperature                       FLOAT RANGE [0.0<=x<=1.0]  Randomness of generated output. [default: 0.1]                                                      │
+│ --top-probability                   FLOAT RANGE [0.1<=x<=1.0]  Limits highest probable tokens (words). [default: 1.0]                                              │
+│ --model                             TEXT                       The model to use for completion. [default: gpt-3.5-turbo]                                           │
+│ --editor             --no-editor                               Open $EDITOR to provide a prompt. [default: no-editor]                                              │
+│ --cache              --no-cache                                Cache completion results. [default: cache]                                                          │
+│ --help                                                         Show this message and exit.                                                                         │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Role Options ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --role                             TEXT  Specify what role a prompt should use. Defaults: shell, code, default. [default: default]                                 │
+│ --save-role                        TEXT  Save a role for future use. [default: None]                                                                               │
+│ --list-roles    --no-list-roles          List all saved roles. [default: no-list-roles]                                                                            │
+│ --show-role                        TEXT  Show a saved role. [default: None]                                                                                        │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Chat Options ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --chat                           TEXT  Follow conversation with id (chat mode). [default: None]                                                                    │
+│ --show-chat                      TEXT  Show all messages from provided chat id. [default: None]                                                                    │
+│ --list-chat    --no-list-chat          List all existing chat ids. [default: no-list-chat]                                                                         │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
 ## Docker
