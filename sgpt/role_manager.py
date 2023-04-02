@@ -60,8 +60,14 @@ Prompt: {prompt}
 ###"""
 
 
-def save_role(role_name: str, system_message: str, executable_returns: bool = False, prompt_structure: str = None,
-              conversation_lead_in: List[Mapping[dict, dict]] = None, echo: bool = True) -> os.path:
+def save_role(
+    role_name: str,
+    system_message: str,
+    executable_returns: bool = False,
+    prompt_structure: str = None,
+    conversation_lead_in: List[Mapping[dict, dict]] = None,
+    echo: bool = True,
+) -> os.path:
     if not os.path.exists(config.ROLE_STORAGE_PATH):
         os.makedirs(config.ROLE_STORAGE_PATH)
 
@@ -70,13 +76,15 @@ def save_role(role_name: str, system_message: str, executable_returns: bool = Fa
     # Check if the role already exists.
     if os.path.exists(role_file):
         # Ask the user if they want to overwrite the role. use typer.confirm() instead.
-        overwrite = typer.confirm(f"Role '{role_name}' already exists. Do you want to overwrite it?")
+        overwrite = typer.confirm(
+            f"Role '{role_name}' already exists. Do you want to overwrite it?"
+        )
         if not overwrite:
             raise FileExistsError(f"Role '{role_name}' already exists.")
 
     role_data = {
         "EXECUTABLE_RETURNS": executable_returns,
-        "SYSTEM_MESSAGE": system_message
+        "SYSTEM_MESSAGE": system_message,
     }
 
     if prompt_structure:
@@ -116,8 +124,11 @@ def list_roles(value: bool):
 
 def _list_roles(echo: bool = True):
     # Output a list of all the roles as a full list of filepaths. Use typer.echo() instead.
-    roles = [os.path.join(config.ROLE_STORAGE_PATH, file) for file in os.listdir(config.ROLE_STORAGE_PATH) if
-             file.endswith(".json")]
+    roles = [
+        os.path.join(config.ROLE_STORAGE_PATH, file)
+        for file in os.listdir(config.ROLE_STORAGE_PATH)
+        if file.endswith(".json")
+    ]
     if echo:
         for role in roles:
             typer.echo(role)
@@ -163,30 +174,45 @@ def check_and_setup_default_roles():
     role_info = [
         ("code", CODE_SYSTEM_PROMPT, False, CODE_PROMPT),
         ("shell", SHELL_SYSTEM_PROMPT, True, SHELL_PROMPT),
-        ("default", DEFAULT_SYSTEM_PROMPT, False, DEFAULT_PROMPT)
+        ("default", DEFAULT_SYSTEM_PROMPT, False, DEFAULT_PROMPT),
     ]
 
     for role, system_prompt, executable_returns, prompt_structure in role_info:
         role_path = os.path.join(config.ROLE_STORAGE_PATH, f"{role}.json")
         if not os.path.exists(role_path):
-            missing_roles.append((role, system_prompt, executable_returns, prompt_structure))
+            missing_roles.append(
+                (role, system_prompt, executable_returns, prompt_structure)
+            )
             typer.echo(f"Default role '{role}' not found.")
 
-    if missing_roles and typer.confirm("Do you want to create the missing default roles?"):
+    if missing_roles and typer.confirm(
+        "Do you want to create the missing default roles?"
+    ):
         for role, system_prompt, executable_returns, prompt_structure in missing_roles:
-            save_role(role, system_prompt, executable_returns, prompt_structure=prompt_structure, echo=True)
+            save_role(
+                role,
+                system_prompt,
+                executable_returns,
+                prompt_structure=prompt_structure,
+                echo=True,
+            )
 
 
 if __name__ == "__main__":
     check_and_setup_default_roles()
     # This is just for testing.
-    save_role("test",
-              "Hello, You are a role testing AI. Please always respond with a more enthuastic test response, "
-              "and all context provided.",
-              executable_returns=False,
-              prompt_structure="Hello, {prompt}!",
-              conversation_lead_in=[{"role": "user", "content": "{shell} and os {os} Test Test"},
-                                    {"role": "assistant", "content": "{shell} and os {os} Test Test Test!"}], echo=True)
+    save_role(
+        "test",
+        "Hello, You are a role testing AI. Please always respond with a more enthuastic test response, "
+        "and all context provided.",
+        executable_returns=False,
+        prompt_structure="Hello, {prompt}!",
+        conversation_lead_in=[
+            {"role": "user", "content": "{shell} and os {os} Test Test"},
+            {"role": "assistant", "content": "{shell} and os {os} Test Test Test!"},
+        ],
+        echo=True,
+    )
     _list_roles(echo=True)
     _show_role("test", echo=True)
 

@@ -23,13 +23,17 @@ def message_completer(message: str, prompt: str = None) -> str:
     return message.format(shell=shell_name, os=os_name)
 
 
-def conversation_lead_in_context_completer(lead_in: List[Mapping[dict, dict]]) -> List[Mapping[dict, dict]]:
+def conversation_lead_in_context_completer(
+    lead_in: List[Mapping[dict, dict]]
+) -> List[Mapping[dict, dict]]:
     for message in lead_in:
         message["content"] = message_completer(message["content"])
     return lead_in
 
 
-def prompt_constructor(prompt: str, role: str = "default", chat_init: bool = True) -> List[Mapping[dict, dict]]:
+def prompt_constructor(
+    prompt: str, role: str = "default", chat_init: bool = True
+) -> List[Mapping[dict, dict]]:
     prompt = prompt.strip()
 
     if not role:
@@ -41,7 +45,9 @@ def prompt_constructor(prompt: str, role: str = "default", chat_init: bool = Tru
     messages = [message_constructor(system_message, system=True)]
     if chat_init and "CONVERSATION_LEAD_IN" in role_data:
         # Add the conversation lead in messages with context.
-        messages.extend(conversation_lead_in_context_completer(role_data["CONVERSATION_LEAD_IN"]))
+        messages.extend(
+            conversation_lead_in_context_completer(role_data["CONVERSATION_LEAD_IN"])
+        )
     messages.append(following_prompt_constructor(prompt, role_data))
     return messages
 
@@ -57,7 +63,9 @@ def following_prompt_constructor(prompt: str, role_data: dict) -> dict:
     return message
 
 
-def message_constructor(message: str, system: bool = False, user: bool = False, assistant: bool = False) -> dict:
+def message_constructor(
+    message: str, system: bool = False, user: bool = False, assistant: bool = False
+) -> dict:
     if not (system or user or assistant):
         raise ValueError("At least one of system, user, assistant must be True")
 
@@ -66,4 +74,6 @@ def message_constructor(message: str, system: bool = False, user: bool = False, 
     elif user:
         return json.loads(f'{{"role": "user", "content": "{message}"}}', strict=False)
     elif assistant:
-        return json.loads(f'{{"role": "assistant", "content": "{message}"}}', strict=False)
+        return json.loads(
+            f'{{"role": "assistant", "content": "{message}"}}', strict=False
+        )

@@ -23,74 +23,74 @@ import sgpt.role_manager as role_manager
 
 
 def main(  # pylint: disable=too-many-arguments
-        prompt: str = typer.Argument(
-            None,
-            show_default=False,
-            help="The prompt to generate completions for.",
-        ),
-        temperature: float = typer.Option(
-            0.1,
-            min=0.0,
-            max=1.0,
-            help="Randomness of generated output.",
-        ),
-        top_probability: float = typer.Option(
-            1.0,
-            min=0.1,
-            max=1.0,
-            help="Limits highest probable tokens (words).",
-        ),
-        model: str = typer.Option(
-            config.get("DEFAULT_MODEL"),
-            help="The model to use for completion.",
-        ),
-        role: str = typer.Option(
-            "default",
-            help="Specify what role a prompt should use. Defaults: shell, code, default.",
-            rich_help_panel="Role Options"
-        ),
-        save_role: str = typer.Option(
-            None,
-            help="Save a role for future use.",
-            rich_help_panel="Role Options",
-        ),
-        list_roles: bool = typer.Option(
-            False,
-            help="List all saved roles.",
-            callback=role_manager.list_roles,
-            rich_help_panel="Role Options",
-        ),
-        show_role: str = typer.Option(
-            None,
-            help="Show a saved role.",
-            callback=role_manager.show_role,
-            rich_help_panel="Role Options",
-        ),
-        chat: str = typer.Option(
-            None,
-            help="Follow conversation with id (chat mode).",
-            rich_help_panel="Chat Options",
-        ),
-        show_chat: str = typer.Option(  # pylint: disable=W0613
-            None,
-            help="Show all messages from provided chat id.",
-            callback=ChatHandler.show_messages,
-            rich_help_panel="Chat Options",
-        ),
-        list_chat: bool = typer.Option(  # pylint: disable=W0613
-            False,
-            help="List all existing chat ids.",
-            callback=ChatHandler.list_ids,
-            rich_help_panel="Chat Options",
-        ),
-        editor: bool = typer.Option(
-            False,
-            help="Open $EDITOR to provide a prompt.",
-        ),
-        cache: bool = typer.Option(
-            True,
-            help="Cache completion results.",
-        ),
+    prompt: str = typer.Argument(
+        None,
+        show_default=False,
+        help="The prompt to generate completions for.",
+    ),
+    temperature: float = typer.Option(
+        0.1,
+        min=0.0,
+        max=1.0,
+        help="Randomness of generated output.",
+    ),
+    top_probability: float = typer.Option(
+        1.0,
+        min=0.1,
+        max=1.0,
+        help="Limits highest probable tokens (words).",
+    ),
+    model: str = typer.Option(
+        config.get("DEFAULT_MODEL"),
+        help="The model to use for completion.",
+    ),
+    role: str = typer.Option(
+        "default",
+        help="Specify what role a prompt should use. Defaults: shell, code, default.",
+        rich_help_panel="Role Options",
+    ),
+    save_role: str = typer.Option(
+        None,
+        help="Save a role for future use.",
+        rich_help_panel="Role Options",
+    ),
+    list_roles: bool = typer.Option(
+        False,
+        help="List all saved roles.",
+        callback=role_manager.list_roles,
+        rich_help_panel="Role Options",
+    ),
+    show_role: str = typer.Option(
+        None,
+        help="Show a saved role.",
+        callback=role_manager.show_role,
+        rich_help_panel="Role Options",
+    ),
+    chat: str = typer.Option(
+        None,
+        help="Follow conversation with id (chat mode).",
+        rich_help_panel="Chat Options",
+    ),
+    show_chat: str = typer.Option(  # pylint: disable=W0613
+        None,
+        help="Show all messages from provided chat id.",
+        callback=ChatHandler.show_messages,
+        rich_help_panel="Chat Options",
+    ),
+    list_chat: bool = typer.Option(  # pylint: disable=W0613
+        False,
+        help="List all existing chat ids.",
+        callback=ChatHandler.list_ids,
+        rich_help_panel="Chat Options",
+    ),
+    editor: bool = typer.Option(
+        False,
+        help="Open $EDITOR to provide a prompt.",
+    ),
+    cache: bool = typer.Option(
+        True,
+        help="Cache completion results.",
+    ),
 ) -> None:
     role_manager.check_and_setup_default_roles()
     if save_role:
@@ -126,7 +126,11 @@ def main(  # pylint: disable=too-many-arguments
 
         # if "EXECUTABLE_RETURNS" in role is true then ask if the response should be executed as shell command
         role_data = role_manager.recall_role(role)
-        if role_data and role_data.get("EXECUTABLE_RETURNS") and typer.confirm("Execute shell command?"):
+        if (
+            role_data
+            and role_data.get("EXECUTABLE_RETURNS")
+            and typer.confirm("Execute shell command?")
+        ):
             os.system(full_completion)
 
 

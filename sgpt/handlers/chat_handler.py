@@ -67,7 +67,7 @@ class ChatSession:
 
     def _write(self, messages: List[Dict], chat_id: str):
         file_path = self.storage_path / chat_id
-        json.dump(messages[-self.length:], file_path.open("w"))
+        json.dump(messages[-self.length :], file_path.open("w"))
 
     def invalidate(self, chat_id: str):
         file_path = self.storage_path / chat_id
@@ -91,12 +91,12 @@ class ChatHandler(Handler):
     chat_session = ChatSession(CHAT_CACHE_LENGTH, CHAT_CACHE_PATH)
 
     def __init__(  # pylint: disable=too-many-arguments
-            self,
-            client: OpenAIClient,
-            chat_id: str,
-            prompt: str,
-            role: str,
-            model: str = "gpt-3.5-turbo",
+        self,
+        client: OpenAIClient,
+        chat_id: str,
+        prompt: str,
+        role: str,
+        model: str = "gpt-3.5-turbo",
     ) -> None:
         super().__init__(client)
         self.chat_id = chat_id
@@ -132,7 +132,9 @@ class ChatHandler(Handler):
             # TODO: Make this system able to tell what role a chat was started with, validate, and continue if the
             #  user didn't specify a role
             existing_system_prompt = self.chat_history[0]["content"]
-            hypothetical_messages = make_prompt.prompt_constructor(self.prompt, role=self.role, chat_init=False)
+            hypothetical_messages = make_prompt.prompt_constructor(
+                self.prompt, role=self.role, chat_init=False
+            )
             if hypothetical_messages[0]["content"] == existing_system_prompt:
                 # return everything except the first message
                 # because the system message is already in the chat history, and chat_cache will add it again
@@ -142,9 +144,12 @@ class ChatHandler(Handler):
                 # exists
                 raise BadArgumentUsage(
                     f"Chat id:'{self.chat_id}' was initiated with system role as \n'{existing_system_prompt}'\n\n "
-                    f"Can't be continued with new system prompt \n'{hypothetical_messages[0]['content']}'")
+                    f"Can't be continued with new system prompt \n'{hypothetical_messages[0]['content']}'"
+                )
         else:
-            messages = make_prompt.prompt_constructor(self.prompt, role=self.role, chat_init=True)
+            messages = make_prompt.prompt_constructor(
+                self.prompt, role=self.role, chat_init=True
+            )
 
         return messages
 
@@ -157,7 +162,7 @@ class ChatHandler(Handler):
 
     @chat_session
     def get_completion(  # pylint: disable=arguments-differ
-            self,
-            **kwargs,
+        self,
+        **kwargs,
     ) -> Generator:
         yield from super().get_completion(**kwargs)
