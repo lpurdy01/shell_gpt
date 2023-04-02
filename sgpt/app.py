@@ -47,19 +47,25 @@ def main(  # pylint: disable=too-many-arguments
     ),
     role: str = typer.Option(
         "default",
-        help="Specify what role a prompt should use. Defaults: shell, code, default."
+        help="Specify what role a prompt should use. Defaults: shell, code, default.",
+        rich_help_panel="Role Options"
     ),
     save_role: str = typer.Option(
         None,
-        help="Save a role for future use."
+        help="Save a role for future use.",
+        rich_help_panel="Role Options",
     ),
     list_roles: bool = typer.Option(
         False,
-        help="List all saved roles."
+        help="List all saved roles.",
+        callback=role_manager.list_roles,
+        rich_help_panel="Role Options",
     ),
     show_role: str = typer.Option(
         None,
-        help="Show a saved role."
+        help="Show a saved role.",
+        callback=role_manager.show_role,
+        rich_help_panel="Role Options",
     ),
     chat: str = typer.Option(
         None,
@@ -88,12 +94,6 @@ def main(  # pylint: disable=too-many-arguments
     ),
 ) -> None:
     role_manager.check_and_setup_default_roles()
-    if list_roles:
-        role_manager.list_roles(echo=True)
-        return
-    if show_role:
-        role_manager.show_role(show_role, echo=True)
-        return
     if save_role:
         role_manager.save_role(save_role, prompt, echo=True)
         return

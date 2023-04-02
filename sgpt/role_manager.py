@@ -61,7 +61,7 @@ Prompt: {prompt}
 
 
 def save_role(role_name: str, system_message: str, executable_returns: bool = False, prompt_structure: str = None,
-              conversation_lead_in: List[Mapping[dict, dict]] = None, echo: bool = False) -> os.path:
+              conversation_lead_in: List[Mapping[dict, dict]] = None, echo: bool = True) -> os.path:
     if not os.path.exists(config.ROLE_STORAGE_PATH):
         os.makedirs(config.ROLE_STORAGE_PATH)
 
@@ -107,7 +107,12 @@ def recall_role(role_name: str) -> dict:
     return role_data
 
 
-def list_roles(echo: bool = False):
+def list_roles():
+    _list_roles(echo=True)
+    raise typer.Exit()
+
+
+def _list_roles(echo: bool = True):
     # Output a list of all the roles as a full list of filepaths. Use typer.echo() instead.
     roles = [os.path.join(config.ROLE_STORAGE_PATH, file) for file in os.listdir(config.ROLE_STORAGE_PATH) if
              file.endswith(".json")]
@@ -118,7 +123,12 @@ def list_roles(echo: bool = False):
     return roles
 
 
-def show_role(role_name: str, echo: bool = False) -> str:
+def show_role(role_name: str):
+    _show_role(role_name, echo=True)
+    raise typer.Exit()
+
+
+def _show_role(role_name: str, echo: bool = True) -> str:
     role_data = recall_role(role_name)
 
     role_info = f"Role Name: {role_name}\n"
@@ -171,7 +181,7 @@ if __name__ == "__main__":
               prompt_structure="Hello, {prompt}!",
               conversation_lead_in=[{"role": "user", "content": "{shell} and os {os} Test Test"},
                                     {"role": "assistant", "content": "{shell} and os {os} Test Test Test!"}], echo=True)
-    list_roles(echo=True)
-    show_role("test", echo=True)
+    _list_roles(echo=True)
+    _show_role("test", echo=True)
 
-    show_role("code", echo=True)
+    _show_role("code", echo=True)

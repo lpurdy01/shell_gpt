@@ -123,7 +123,6 @@ class ChatHandler(Handler):
             return
         # Prints all messages from a specified chat ID to the console.
         for index, message in enumerate(cls.chat_session.get_messages(chat_id)):
-            message = message.replace("\nCommand:", "").replace("\nCode:", "")
             color = "cyan" if index % 2 == 0 else "green"
             typer.secho(message, fg=color)
         raise typer.Exit()
