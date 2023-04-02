@@ -49,13 +49,14 @@ class TestShellGpt(TestCase):
     def test_shell(self):
         dict_arguments = {
             "prompt": "make a commit using git",
-            "--shell": True,
+            "--role": "shell",
         }
         result = runner.invoke(app, self.get_arguments(**dict_arguments))
         assert result.exit_code == 0
         assert "git commit" in result.stdout
 
     def test_code(self):
+        chat_name = uuid4()
         """
         This test will request from ChatGPT a python code to make CLI app,
         which will be written to a temp file, and then it will be executed
@@ -64,11 +65,12 @@ class TestShellGpt(TestCase):
         """
         dict_arguments = {
             "prompt": (
-                "Create a command line application using Python that "
+                "Please create a command line application using Python that "
                 "accepts two positional arguments "
                 "and prints the result of multiplying them."
             ),
-            "--code": True,
+            "--chat": f"test_{chat_name}",
+            "--role": "code",
         }
         result = runner.invoke(app, self.get_arguments(**dict_arguments))
         assert result.exit_code == 0
@@ -118,7 +120,7 @@ class TestShellGpt(TestCase):
             "prompt": "Create nginx docker container, forward ports 80, "
             "mount current folder with index.html",
             "--chat": f"test_{chat_name}",
-            "--shell": True,
+            "--role": "shell",
         }
         result = runner.invoke(app, self.get_arguments(**dict_arguments))
         assert result.exit_code == 0
@@ -130,9 +132,7 @@ class TestShellGpt(TestCase):
         assert result.exit_code == 0
         assert "-p 80:80" in result.stdout
         assert "-p 443:443" in result.stdout
-        dict_arguments["--code"] = True
-        del dict_arguments["--shell"]
-        assert "--shell" not in dict_arguments
+        dict_arguments["--role"] = "code"
         result = runner.invoke(app, self.get_arguments(**dict_arguments))
         # If we are using --code, we cannot use --shell.
         assert result.exit_code == 2
@@ -142,7 +142,7 @@ class TestShellGpt(TestCase):
         dict_arguments = {
             "prompt": "Using python request localhost:80.",
             "--chat": f"test_{chat_name}",
-            "--code": True,
+            "--role": "code"
         }
         result = runner.invoke(app, self.get_arguments(**dict_arguments))
         assert result.exit_code == 0
@@ -151,9 +151,9 @@ class TestShellGpt(TestCase):
         result = runner.invoke(app, self.get_arguments(**dict_arguments))
         assert result.exit_code == 0
         assert "localhost:443" in result.stdout
-        del dict_arguments["--code"]
-        assert "--code" not in dict_arguments
-        dict_arguments["--shell"] = True
+        del dict_arguments["--role"]
+        assert "--role" not in dict_arguments
+        dict_arguments["--role"] = "shell"
         result = runner.invoke(app, self.get_arguments(**dict_arguments))
         # If we have --code chat, we cannot use --shell.
         assert result.exit_code == 2
@@ -181,8 +181,8 @@ class TestShellGpt(TestCase):
     def test_validation_code_shell(self):
         dict_arguments = {
             "prompt": "What is the capital of the Czech Republic?",
-            "--code": True,
-            "--shell": True,
+            "--role": "code",
+            "--role": "shell"
         }
         result = runner.invoke(app, self.get_arguments(**dict_arguments))
         assert result.exit_code == 2
