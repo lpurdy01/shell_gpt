@@ -133,6 +133,8 @@ def main(  # pylint: disable=R0913,R0914
     if code:
         role = "code"
 
+    if not role:
+        role = "default"
 
     if chat:
         # TODO: Why doesn't execution continue after .handle returns?
