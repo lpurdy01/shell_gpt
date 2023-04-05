@@ -45,7 +45,7 @@ def main(  # pylint: disable=R0913,R0914
         help="The model to use for completion.",
     ),
     role: str = typer.Option(
-        "default",
+        None,
         help="Specify what role a prompt should use. Defaults: shell, code, default.",
         rich_help_panel="Role Options",
     ),
@@ -65,6 +65,18 @@ def main(  # pylint: disable=R0913,R0914
         help="Show a saved role.",
         callback=role_manager.show_role,
         rich_help_panel="Role Options",
+    ),
+    shell: bool = typer.Option(
+        False,
+        "--shell",
+        "-s",
+        help="Generate and execute shell commands.",
+        rich_help_panel="Assistance Options",
+    ),
+    code: bool = typer.Option(
+        False,
+        help="Generate only code.",
+        rich_help_panel="Assistance Options",
     ),
     chat: str = typer.Option(
         None,
@@ -106,6 +118,21 @@ def main(  # pylint: disable=R0913,R0914
     api_host = config.get("OPENAI_API_HOST")
     api_key = config.get("OPENAI_API_KEY")
     client = OpenAIClient(api_host, api_key)
+    # Check if --shell or --code is called and set role accordingly while only allowing
+    # one of the three to be called
+    # If role and shell or role and code are called, error
+    if role and (shell or code):
+        raise typer.BadParameter("Cannot use --role and --shell or --code together.")
+    # If neither is called, then the role is set to the default role
+    if shell and code:
+        raise typer.BadParameter("Cannot use --shell and --code together.")
+
+    if shell:
+        role = "shell"
+
+    if code:
+        role = "code"
+
 
     if chat:
         # TODO: Why doesn't execution continue after .handle returns?
