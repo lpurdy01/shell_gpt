@@ -28,8 +28,8 @@ A command-line productivity tool powered by OpenAI's GPT-3.5 model. As developer
 ╭─ Chat Options ─────────────────────────────────────────────────────────────────────────────────────────────╮
 │ --chat        TEXT  Follow conversation with id, use "temp" for quick session. [default: None]             │
 │ --repl        TEXT  Start a REPL (Read–eval–print loop) session. [default: None]                           │
-│ --show-chat   TEXT  Show all messages from provided chat id. [default: None]                               │
-│ --list-chat         List all existing chat ids. [default: no-list-chat]                                    │
+│ --show-chat -sc  TEXT  Show all messages from provided chat id. [default: None]                            │
+│ --list-chat -lc        List all existing chat ids. [default: no-list-chat]                                 │
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
