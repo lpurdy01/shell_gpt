@@ -14,6 +14,7 @@ You can get updated version on this site, and install locally.\
 1. Simplify --chat to -c, --show-chat to -sc, --list-chat to -lc, DONE.
 2. Automatic identify problem domain and become the expert. DONE.
 3. Concise Read Me. DONE.
+4. Temp = 0.5
 
 ### Possible future updates,
 - Handle token limits nicely, defining nicely, already good with current update.
@@ -25,7 +26,7 @@ You can get updated version on this site, and install locally.\
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ --model            [gpt-3.5-turbo|gpt-4|gpt-4-32k]  OpenAI GPT model to use. [default: gpt-3.5-turbo]      │
-│ --temperature      FLOAT RANGE [0.0<=x<=1.0]        Randomness of generated output. [default: 0.1]         │
+│ --temperature      FLOAT RANGE [0.0<=x<=1.0]        Randomness of generated output. [default: 0.5]         │
 │ --top-probability  FLOAT RANGE [0.1<=x<=1.0]        Limits highest probable tokens (words). [default: 1.0] │
 │ --editor                                            Open $EDITOR to provide a prompt. [default: no-editor] │
 │ --cache                                             Cache completion results. [default: cache]             │
