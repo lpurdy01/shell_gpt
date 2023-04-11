@@ -3,7 +3,7 @@ A command-line productivity tool powered by OpenAI's GPT-3.5 model. As developer
 
 ## Update Plans
 You can get updated version on this site, and install locally.
-1. Simplify --show-chat to -sc, --list-chat to -lc, DONE. [Download](https://github.com/MartletH/shell_gpt/raw/main/dist/shell_gpt-0.8.8.1.tar.gz)
+1. Simplify --show-chat to -sc, --list-chat to -lc, DONE.
 2. Automatic identify problem domain and become the expert the answer questions. DONE. [Download](https://github.com/MartletH/shell_gpt/raw/main/dist/shell_gpt-0.8.8.2.tar.gz)
 3. Handle token limits nicely
 
