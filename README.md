@@ -1,15 +1,22 @@
 # Shell GPT
-A command-line productivity tool powered by OpenAI's GPT-3.5 model. As developers, we can leverage AI capabilities to generate shell commands, code snippets, comments, and documentation, among other things. Forget about cheat sheets and notes, with this tool you can get accurate answers right in your terminal, and you'll probably find yourself reducing your daily Google searches, saving you valuable time and effort.
+A command-line productivity tool powered by OpenAI's GPT-3.5 model.\
+You can find original version from the fork information.
 
-## Update Plans
-You can get updated version on this site, and install locally.
-1. Simplify --show-chat to -sc, --list-chat to -lc, DONE.
-2. Automatic identify problem domain and become the expert the answer questions. DONE. [Download](https://github.com/MartletH/shell_gpt/raw/main/dist/shell_gpt-0.8.8.2.tar.gz)
-3. Handle token limits nicely
+## Download and Install
+You can get updated version on this site, and install locally.\
+[Download](https://github.com/MartletH/shell_gpt/raw/main/dist/shell_gpt-0.8.8.2.tar.gz)
 
-## Install
-- Go to your local download folder,
+### Install
+- Go to your local download folder
 - pip install shell_gpt-x.tar.gz
+
+## Updates
+1. Simplify --show-chat to -sc, --list-chat to -lc, DONE.
+2. Automatic identify problem domain and become the expert the answer questions. DONE.
+3. Concise Read Me. DONE.
+
+### Possible future updates,
+- Handle token limits nicely, defining nicely, already good with current update.
 
 ### Full list of arguments
 ```text
@@ -25,42 +32,30 @@ You can get updated version on this site, and install locally.
 │ --help                                              Show this message and exit.                            │
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ╭─ Assistance Options ───────────────────────────────────────────────────────────────────────────────────────╮
-│ --shell  -s                 Generate and execute shell commands.                                           │
+│ --shell      -s                 Generate and execute shell commands.                                       │
 │ --code       --no-code      Generate only code. [default: no-code]                                         │
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ╭─ Chat Options ─────────────────────────────────────────────────────────────────────────────────────────────╮
-│ --chat        TEXT  Follow conversation with id, use "temp" for quick session. [default: None]             │
-│ --repl        TEXT  Start a REPL (Read–eval–print loop) session. [default: None]                           │
-│ --show-chat -sc  TEXT  Show all messages from provided chat id. [default: None]                            │
-│ --list-chat -lc        List all existing chat ids. [default: no-list-chat]                                 │
+│ --chat       -c    TEXT  Follow conversation with id, use "temp" for quick session. [default: None]        │
+│ --repl             TEXT  Start a REPL (Read–eval–print loop) session. [default: None]                      │
+│ --show-chat  -sc   TEXT  Show all messages from provided chat id. [default: None]                          │
+│ --list-chat  -lc        List all existing chat ids. [default: no-list-chat]                                │
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-
-
 ## Usage Examples
 ### Simple queries
-```shell
-sgpt "nginx default config file location"
-# -> The default configuration file for Nginx is located at /etc/nginx/nginx.conf.
-```
+
 ```shell
 sgpt "mass of sun"
 # -> = 1.99 × 10^30 kg
 ```
-```shell
-sgpt "1 hour and 30 minutes to seconds"
-# -> 5,400 seconds
-```
+
 ### Summarization and analyzing
 ShellGPT accepts prompt from both stdin and command line argument
 ```shell
 git diff | sgpt "Generate git commit message, for my changes"
 # -> Commit message: Implement Model enum and get_edited_prompt()
-```
-```shell
-docker logs -n 20 container_name | sgpt "check logs, find errors, provide possible solutions"
-# ...
 ```
 
 ### Shell commands
@@ -78,39 +73,8 @@ sgpt -s "update my system"
 sgpt -s "update my system"
 # -> sudo apt update && sudo apt upgrade -y
 ```
-```shell
-sgpt -s "start nginx using docker, forward 443 and 80 port, mount current folder with index.html"
-# -> docker run -d -p 443:443 -p 80:80 -v $(pwd):/usr/share/nginx/html nginx
-# -> Execute shell command? [y/N]: y
-# ...
-```
-```shell
-cat data.json | sgpt -s "curl localhost with provided json"
-# -> curl -X POST -H "Content-Type: application/json" -d '{"a": 1, "b": 2, "c": 3}' http://localhost
-````
-```shell
-ls
-# -> 1.mp4 2.mp4 3.mp4
-sgpt -s "using ffmpeg combine multiple videos into one without audio. Video file names: $(ls -m)"
-# -> ffmpeg -i 1.mp4 -i 2.mp4 -i 3.mp4 -filter_complex "[0:v] [1:v] [2:v] concat=n=3:v=1 [v]" -map "[v]" out.mp4
-# -> Execute shell command? [y/N]: y
-# ...
-```
+
 ### Generating code
-```shell
-sgpt --code "Solve classic fizz buzz problem using Python"
-```
-```python
-for i in range(1, 101):
-    if i % 3 == 0 and i % 5 == 0:
-        print("FizzBuzz")
-    elif i % 3 == 0:
-        print("Fizz")
-    elif i % 5 == 0:
-        print("Buzz")
-    else:
-        print(i)
-```
 ```shell
 sgpt --code "solve classic fizz buzz problem using Python" > fizz_buzz.py
 python fizz_buzz.py
@@ -146,35 +110,9 @@ for i in range(1, 101):
 ```
 
 ### Chat
-```shell
-sgpt --chat number "please remember my favorite number: 4"
-# -> I will remember that your favorite number is 4.
-sgpt --chat number "what would be my favorite number + 4?"
-# -> Your favorite number is 4, so if we add 4 to it, the result would be 8.
-```
-```shell
-sgpt --chat python_requst --code "make an example request to localhost using Python"
-```
-```python
-import requests
 
-response = requests.get('http://localhost')
-print(response.text)
-```
-```shell
-sgpt --chat python_request --code "add caching"
-```
-```python
-import requests
-from cachecontrol import CacheControl
-
-sess = requests.session()
-cached_sess = CacheControl(sess)
-
-response = cached_sess.get('http://localhost')
-print(response.text)
-```
 We can use `--code` or `--shell` options to initiate `--chat`, so you can keep refining the results:
+
 ```shell
 sgpt --chat sh --shell "What are the files in this directory?"
 # -> ls
@@ -187,8 +125,7 @@ sgpt --chat sh "Convert the resulting file into an MP3"
 ```
 
 ### REPL
-There is very handy REPL (read–eval–print loop) mode, which allows you to interactively chat with GPT models. To start a chat session in REPL mode, use the `--repl` option followed by a unique session name. You can also use "temp" as a session name to start a temporary REPL session. Note that `--chat` and `--repl` are using same chat sessions, so you can use `--chat` to start a chat session and then use `--repl` to continue the conversation in REPL mode. REPL mode will also show history of your conversation in the beginning.
-
+REPL (read–eval–print loop) mode. It reuse chat id.
 
 ```text
 sgpt --repl temp
@@ -251,8 +188,8 @@ Next time, same exact query will get results from local cache instantly. Note th
 
 This is just some examples of what we can do using OpenAI GPT models, I'm sure you will find it useful for your specific use cases.
 
-### Runtime configuration file
-You can setup some parameters in runtime configuration file `~/.config/shell_gpt/.sgptrc`:
+### Config file
+Config file location `~/.config/shell_gpt/.sgptrc`
 ```text
 # API key, also it is possible to define OPENAI_API_KEY env.
 OPENAI_API_KEY=your_api_key
@@ -275,34 +212,3 @@ DEFAULT_COLOR=magenta
 ```
 Possible options for `DEFAULT_COLOR`: black, red, green, yellow, blue, magenta, cyan, white, bright_black, bright_red, bright_green, bright_yellow, bright_blue, bright_magenta, bright_cyan, bright_white.
 
--------------------
-## Original Version Installation (NOT this updated version)
-```shell
-pip install shell-gpt
-```
-You'll need an OpenAI API key, you can generate one [here](https://beta.openai.com/account/api-keys).
-
-If the`$OPENAI_API_KEY` environment variable is set it will be used, otherwise, you will be prompted for your key which will then be stored in `~/.config/shell_gpt/.sgptrc`.
-
-## Original Version Docker
-Run the container using the `OPENAI_API_KEY` environment variable, and a docker volume to store cache:
-```shell
-docker run --rm \
-           --env OPENAI_API_KEY="your OPENAI API key" \
-           --volume gpt-cache:/tmp/shell_gpt \
-       ghcr.io/ther1d/shell_gpt --chat rainbow "what are the colors of a rainbow"
-```
-
-Example of a conversation, using an alias and the `OPENAI_API_KEY` environment variable:
-```shell
-alias sgpt="docker run --rm --env OPENAI_API_KEY --volume gpt-cache:/tmp/shell_gpt ghcr.io/ther1d/shell_gpt"
-export OPENAI_API_KEY="your OPENAI API key"
-sgpt --chat rainbow "what are the colors of a rainbow"
-sgpt --chat rainbow "inverse the list of your last answer"
-sgpt --chat rainbow "translate your last answer in french"
-```
-
-You also can use the provided `Dockerfile` to build your own image:
-```shell
-docker build -t sgpt .
-```
