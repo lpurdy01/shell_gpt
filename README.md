@@ -7,7 +7,7 @@ You can get updated version on this site, and install locally.
     - go to dist folder, download, or just click [this](https://github.com/MartletH/shell_gpt/raw/main/dist/shell_gpt-0.8.8.1.tar.gz)
 
 2. Automatic identify problem domain and become the expert the answer questions. DONE.
-    -go to dist folder, download, or just click [this](https://github.com/MartletH/shell_gpt/raw/main/dist/shell_gpt-0.8.8.2.tar.gz)
+    - go to dist folder, download, or just click [this](https://github.com/MartletH/shell_gpt/raw/main/dist/shell_gpt-0.8.8.2.tar.gz)
 3. Handle token limits nicely
 
 ## Install
