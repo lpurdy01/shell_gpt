@@ -1,5 +1,5 @@
 # Shell GPT
-A command-line productivity tool powered by OpenAI's GPT-3.5 model.\
+A command-line productivity tool powered by OpenAI.\
 You can find original version from the fork information.
 
 ## Download and Install
