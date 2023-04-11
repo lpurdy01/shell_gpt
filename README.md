@@ -12,7 +12,7 @@ You can get updated version on this site, and install locally.\
 
 ## Updates
 1. Simplify --chat to -c, --show-chat to -sc, --list-chat to -lc, DONE.
-2. Automatic identify problem domain and become the expert the answer questions. DONE.
+2. Automatic identify problem domain and become the expert. DONE.
 3. Concise Read Me. DONE.
 
 ### Possible future updates,
