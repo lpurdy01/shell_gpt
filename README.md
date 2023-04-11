@@ -4,7 +4,8 @@ A command-line productivity tool powered by OpenAI's GPT-3.5 model. As developer
 ## Update Plans
 You can get updated version on this site, and install locally.
 1. Simplify --show-chat to -sc, --list-chat to -lc, DONE, 20230411
-    - go to dist folder, pip install shell_gpt-0.8.8.1.tar.gz to get this update.
+    - go to dist folder, download, or just click [this](https://github.com/MartletH/shell_gpt/raw/main/dist/shell_gpt-0.8.8.1.tar.gz)
+    - pip install shell_gpt-0.8.8.1.tar.gz to get this update
 2. Adding role play feature for chat
 3. Handle token limits nicely
 
