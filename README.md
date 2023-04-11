@@ -1,19 +1,41 @@
 # Shell GPT
 A command-line productivity tool powered by OpenAI's GPT-3.5 model. As developers, we can leverage AI capabilities to generate shell commands, code snippets, comments, and documentation, among other things. Forget about cheat sheets and notes, with this tool you can get accurate answers right in your terminal, and you'll probably find yourself reducing your daily Google searches, saving you valuable time and effort.
 
-<div align="center">
-    <img src="https://i.ibb.co/nzPqnVd/sgpt-v0-8.gif" width="800"/>
-</div>
+## Update Plans
+1. Simplify --show-chat to -sc, --list-chat to -lc, DONE, 20230411
+    go to dist folder, pip install shell_gpt-0.8.8.1.tar.gz to get this update.
+2. Adding role play feature for chat
+3. Handle token limits nicely
 
-## Installation
-```shell
-pip install shell-gpt==0.8.8
+
+### Full list of arguments
+```text
+╭─ Arguments ────────────────────────────────────────────────────────────────────────────────────────────────╮
+│   prompt      [PROMPT]  The prompt to generate completions for.                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --model            [gpt-3.5-turbo|gpt-4|gpt-4-32k]  OpenAI GPT model to use. [default: gpt-3.5-turbo]      │
+│ --temperature      FLOAT RANGE [0.0<=x<=1.0]        Randomness of generated output. [default: 0.1]         │
+│ --top-probability  FLOAT RANGE [0.1<=x<=1.0]        Limits highest probable tokens (words). [default: 1.0] │
+│ --editor                                            Open $EDITOR to provide a prompt. [default: no-editor] │
+│ --cache                                             Cache completion results. [default: cache]             │
+│ --help                                              Show this message and exit.                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Assistance Options ───────────────────────────────────────────────────────────────────────────────────────╮
+│ --shell  -s                 Generate and execute shell commands.                                           │
+│ --code       --no-code      Generate only code. [default: no-code]                                         │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Chat Options ─────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --chat        TEXT  Follow conversation with id, use "temp" for quick session. [default: None]             │
+│ --repl        TEXT  Start a REPL (Read–eval–print loop) session. [default: None]                           │
+│ --show-chat   TEXT  Show all messages from provided chat id. [default: None]                               │
+│ --list-chat         List all existing chat ids. [default: no-list-chat]                                    │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
-You'll need an OpenAI API key, you can generate one [here](https://beta.openai.com/account/api-keys).
 
-If the`$OPENAI_API_KEY` environment variable is set it will be used, otherwise, you will be prompted for your key which will then be stored in `~/.config/shell_gpt/.sgptrc`.
 
-## Usage
+
+## Usage Examples
 `sgpt` has a variety of use cases, including simple queries, shell queries, and code queries.
 ### Simple queries
 We can use it as normal search engine, asking about anything:
@@ -180,9 +202,6 @@ sgpt --chat sh "Convert the resulting file into an MP3"
 ### REPL
 There is very handy REPL (read–eval–print loop) mode, which allows you to interactively chat with GPT models. To start a chat session in REPL mode, use the `--repl` option followed by a unique session name. You can also use "temp" as a session name to start a temporary REPL session. Note that `--chat` and `--repl` are using same chat sessions, so you can use `--chat` to start a chat session and then use `--repl` to continue the conversation in REPL mode. REPL mode will also show history of your conversation in the beginning.
 
-<p align="center">
-  <img src="https://s10.gifyu.com/images/repl-demo.gif" alt="gif">
-</p>
 
 ```text
 sgpt --repl temp
@@ -269,32 +288,16 @@ DEFAULT_COLOR=magenta
 ```
 Possible options for `DEFAULT_COLOR`: black, red, green, yellow, blue, magenta, cyan, white, bright_black, bright_red, bright_green, bright_yellow, bright_blue, bright_magenta, bright_cyan, bright_white.
 
-### Full list of arguments
-```text
-╭─ Arguments ────────────────────────────────────────────────────────────────────────────────────────────────╮
-│   prompt      [PROMPT]  The prompt to generate completions for.                                            │
-╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ --model            [gpt-3.5-turbo|gpt-4|gpt-4-32k]  OpenAI GPT model to use. [default: gpt-3.5-turbo]      │
-│ --temperature      FLOAT RANGE [0.0<=x<=1.0]        Randomness of generated output. [default: 0.1]         │
-│ --top-probability  FLOAT RANGE [0.1<=x<=1.0]        Limits highest probable tokens (words). [default: 1.0] │
-│ --editor                                            Open $EDITOR to provide a prompt. [default: no-editor] │
-│ --cache                                             Cache completion results. [default: cache]             │
-│ --help                                              Show this message and exit.                            │
-╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Assistance Options ───────────────────────────────────────────────────────────────────────────────────────╮
-│ --shell  -s                 Generate and execute shell commands.                                           │
-│ --code       --no-code      Generate only code. [default: no-code]                                         │
-╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Chat Options ─────────────────────────────────────────────────────────────────────────────────────────────╮
-│ --chat        TEXT  Follow conversation with id, use "temp" for quick session. [default: None]             │
-│ --repl        TEXT  Start a REPL (Read–eval–print loop) session. [default: None]                           │
-│ --show-chat   TEXT  Show all messages from provided chat id. [default: None]                               │
-│ --list-chat         List all existing chat ids. [default: no-list-chat]                                    │
-╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+-------------------
+## Original Version Installation (NOT this updated version)
+```shell
+pip install shell-gpt
 ```
+You'll need an OpenAI API key, you can generate one [here](https://beta.openai.com/account/api-keys).
 
-## Docker
+If the`$OPENAI_API_KEY` environment variable is set it will be used, otherwise, you will be prompted for your key which will then be stored in `~/.config/shell_gpt/.sgptrc`.
+
+## Original Version Docker
 Run the container using the `OPENAI_API_KEY` environment variable, and a docker volume to store cache:
 ```shell
 docker run --rm \
