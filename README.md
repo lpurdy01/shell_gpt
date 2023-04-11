@@ -36,9 +36,7 @@ A command-line productivity tool powered by OpenAI's GPT-3.5 model. As developer
 
 
 ## Usage Examples
-`sgpt` has a variety of use cases, including simple queries, shell queries, and code queries.
 ### Simple queries
-We can use it as normal search engine, asking about anything:
 ```shell
 sgpt "nginx default config file location"
 # -> The default configuration file for Nginx is located at /etc/nginx/nginx.conf.
@@ -52,49 +50,41 @@ sgpt "1 hour and 30 minutes to seconds"
 # -> 5,400 seconds
 ```
 ### Summarization and analyzing
-ShellGPT accepts prompt from both stdin and command line argument, you choose the most convenient input method for your preferences. Whether you prefer piping input through the terminal or specifying it directly as arguments, `sgpt` got you covered. This versatile feature is particularly useful when you need to pass file content or pipe output from other commands to the GPT models for summarization or analysis. For example, you can easily generate a git commit message based on a diff:
+ShellGPT accepts prompt from both stdin and command line argument
 ```shell
 git diff | sgpt "Generate git commit message, for my changes"
 # -> Commit message: Implement Model enum and get_edited_prompt()
 ```
-You can analyze logs from various sources by passing them using stdin or command line arguments, along with a user-friendly prompt. This enables you to quickly identify errors and get suggestions for possible solutions:
 ```shell
 docker logs -n 20 container_name | sgpt "check logs, find errors, provide possible solutions"
 # ...
 ```
-This powerful feature simplifies the process of managing and understanding data from different sources, making it easier for you to focus on what really matters: improving your projects and applications.
 
 ### Shell commands
-Have you ever found yourself forgetting common shell commands, such as `chmod`, and needing to look up the syntax online? With `--shell` or shortcut `-s` option, you can quickly find and execute the commands you need right in the terminal.
 ```shell
 sgpt --shell "make all files in current directory read only"
 # -> chmod 444 *
 # -> Execute shell command? [y/N]: y
 # ...
 ```
-Shell GPT is aware of OS and `$SHELL` you are using, it will provide shell command for specific system you have. For instance, if you ask `sgpt` to update your system, it will return a command based on your OS. Here's an example using macOS:
 ```shell
 sgpt -s "update my system"
 # -> sudo softwareupdate -i -a
 ```
-The same prompt, when used on Ubuntu, will generate a different suggestion:
 ```shell
 sgpt -s "update my system"
 # -> sudo apt update && sudo apt upgrade -y
 ```
-Let's try some docker containers:
 ```shell
 sgpt -s "start nginx using docker, forward 443 and 80 port, mount current folder with index.html"
 # -> docker run -d -p 443:443 -p 80:80 -v $(pwd):/usr/share/nginx/html nginx
 # -> Execute shell command? [y/N]: y
 # ...
 ```
-We can still use pipes to pass input to `sgpt` and get shell commands as output:
 ```shell
 cat data.json | sgpt -s "curl localhost with provided json"
 # -> curl -X POST -H "Content-Type: application/json" -d '{"a": 1, "b": 2, "c": 3}' http://localhost
 ````
-We can apply additional shell magic in our prompt, in this example passing file names to ffmpeg:
 ```shell
 ls
 # -> 1.mp4 2.mp4 3.mp4
@@ -104,7 +94,6 @@ sgpt -s "using ffmpeg combine multiple videos into one without audio. Video file
 # ...
 ```
 ### Generating code
-With `--code` parameters we can query only code as output, for example:
 ```shell
 sgpt --code "Solve classic fizz buzz problem using Python"
 ```
@@ -119,7 +108,6 @@ for i in range(1, 101):
     else:
         print(i)
 ```
-Since it is valid python code, we can redirect the output to file:
 ```shell
 sgpt --code "solve classic fizz buzz problem using Python" > fizz_buzz.py
 python fizz_buzz.py
@@ -131,7 +119,6 @@ python fizz_buzz.py
 # Fizz
 # ...
 ```
-We can also use pipes to pass input to `sgpt`:
 ```shell
 cat fizz_buzz.py | python -m sgpt --code "Generate comments for each line of my code"
 ```
@@ -156,14 +143,12 @@ for i in range(1, 101):
 ```
 
 ### Chat
-To start a chat session, use the `--chat` option followed by a unique session name and a prompt. You can also use "temp" as a session name to start a temporary chat session.
 ```shell
 sgpt --chat number "please remember my favorite number: 4"
 # -> I will remember that your favorite number is 4.
 sgpt --chat number "what would be my favorite number + 4?"
 # -> Your favorite number is 4, so if we add 4 to it, the result would be 8.
 ```
-You can also use chat sessions to iteratively improve GPT suggestions by providing additional clues.
 ```shell
 sgpt --chat python_requst --code "make an example request to localhost using Python"
 ```
@@ -173,7 +158,6 @@ import requests
 response = requests.get('http://localhost')
 print(response.text)
 ```
-Asking AI to add a cache to our request.
 ```shell
 sgpt --chat python_request --code "add caching"
 ```
