@@ -2,6 +2,7 @@
 A command-line productivity tool powered by OpenAI's GPT-3.5 model. As developers, we can leverage AI capabilities to generate shell commands, code snippets, comments, and documentation, among other things. Forget about cheat sheets and notes, with this tool you can get accurate answers right in your terminal, and you'll probably find yourself reducing your daily Google searches, saving you valuable time and effort.
 
 ## Update Plans
+You can get updated version on this site, and install locally.
 1. Simplify --show-chat to -sc, --list-chat to -lc, DONE, 20230411
     - go to dist folder, pip install shell_gpt-0.8.8.1.tar.gz to get this update.
 2. Adding role play feature for chat
