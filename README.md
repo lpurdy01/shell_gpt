@@ -11,10 +11,10 @@ You can get updated version on this site, and install locally.\
 - pip install shell_gpt-x.tar.gz
 
 ## Updates
-1. Simplify --chat to -c, --show-chat to -sc, --list-chat to -lc, DONE.
-2. Automatic identify problem domain and become the expert. DONE.
-3. Concise Read Me. DONE.
-4. Temp = 0.5
+1. Simplify --chat to -c, --show-chat to -sc, --list-chat to -lc.
+2. Automatic identify problem domain and become the expert.
+3. Concise Read Me.
+4. Temp = 0.5.
 
 ### Possible future updates,
 - Handle token limits nicely, defining nicely, already good with current update.
